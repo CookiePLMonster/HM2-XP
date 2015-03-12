@@ -1,0 +1,4 @@
+LIBRARY		hm2_xp.dll
+EXPORTS
+	CloseHandle
+	_FreeLibrary
