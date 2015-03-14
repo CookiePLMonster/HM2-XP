@@ -1,5 +1,8 @@
 LIBRARY		hm2_xp.dll
 EXPORTS
+	; HotlineMiami2.exe patcher
+	_patchexeW=__patchexeW@16
+
 ; kernel32 stock exports
 	CloseHandle
 	CreateDirectoryExA

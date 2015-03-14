@@ -11,9 +11,10 @@
 #include <stdio.h>
 #include <Shlobj.h>
 #include <locale.h>
+#include <stddef.h>
 
 // kernel32 emulation functions
-VOID WINAPI InitializeConditionVariable(PCONDITION_VARIABLE ConditionVariable) 
+VOID WINAPI InitializeConditionVariable(PCONDITION_VARIABLE ConditionVariable)
 {
 	*(PHANDLE)ConditionVariable = CreateEvent(NULL, FALSE, TRUE, NULL);
 }
@@ -23,7 +24,6 @@ BOOL WINAPI SleepConditionVariableCS( PCONDITION_VARIABLE ConditionVariable, PCR
 	DWORD dwResult;
 	LeaveCriticalSection(CriticalSection);
 	dwResult = WaitForSingleObject(*(PHANDLE)ConditionVariable, dwMilliseconds);
-	//LeaveCriticalSection(CriticalSection);
 	EnterCriticalSection(CriticalSection);
 
 	return dwResult == WAIT_OBJECT_0 ? TRUE : FALSE;
@@ -31,7 +31,7 @@ BOOL WINAPI SleepConditionVariableCS( PCONDITION_VARIABLE ConditionVariable, PCR
 
 VOID WINAPI WakeAllConditionVariable(PCONDITION_VARIABLE ConditionVariable)
 {
-	// TODO: Probably unreliable
+	// TODO: Probably a bit unreliable?
 	SetEvent(*(PHANDLE)ConditionVariable);
 	//PulseEvent(*(PHANDLE)ConditionVariable);
 }
@@ -56,7 +56,7 @@ HRESULT WINAPI SHGetKnownFolderPath(REFKNOWNFOLDERID rfid, DWORD dwFlags, HANDLE
 	wchar_t	wcTempString[MAX_PATH];
 	size_t	nLen;
 	LPVOID	pAlloc;
-	
+
 	hResult = SHGetFolderPathW(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, wcTempString);
 	if ( hResult == S_OK )
 	{
@@ -67,4 +67,97 @@ HRESULT WINAPI SHGetKnownFolderPath(REFKNOWNFOLDERID rfid, DWORD dwFlags, HANDLE
 		*ppszPath = (PWSTR)pAlloc;
 	}
 	return hResult;
+}
+
+
+// EXE patcher
+void CALLBACK _patchexeW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, int nCmdShow)
+{
+	// This opens a HM2 EXE and patches kernel32.dll and shell32.dll imports to use hm2_xp.dll instead
+	FILE* hFile;
+
+	// First, create a backup
+	CopyFile(lpszCmdLine, L"HotlineMiami2.exe.bak", FALSE);
+
+	if ( hFile = _wfopen(lpszCmdLine, L"rb+") )
+	{
+		DWORD					dwNTOffset;
+		WORD					NumberOfSections;
+		WORD					i;
+		DWORD					IATOffset;
+		ptrdiff_t				RVAOffset;
+		long					dwKernelOffset = 0, dwShellOffset = 0;
+		char					cDLLNameBuf[16];
+
+
+		// Skip to IMAGE_DOS_HEADER.e_lfanew
+		fseek(hFile, offsetof(IMAGE_DOS_HEADER, e_lfanew), SEEK_SET);
+		fread(&dwNTOffset, sizeof(DWORD), 1, hFile);
+
+		// Skip to IMAGE_FILE_HEADER.NumberOfSections
+		fseek(hFile, dwNTOffset + offsetof(IMAGE_NT_HEADERS, FileHeader.NumberOfSections), SEEK_SET);
+		fread(&NumberOfSections, sizeof(NumberOfSections), 1, hFile);
+
+		// Skip to the imports directory
+		fseek(hFile, dwNTOffset + offsetof(IMAGE_NT_HEADERS, OptionalHeader) + 104, SEEK_SET);	// 104, as seen on MSDN
+		fread(&IATOffset, sizeof(DWORD), 1, hFile);
+
+		// Skip to IMAGE_SECTION_HEADER array
+		fseek(hFile, dwNTOffset + sizeof(IMAGE_NT_HEADERS), SEEK_SET);
+		//fread(&dwNumSections, sizeof(DWORD), 1, hFile);
+
+		// Read sections until .rdata is found
+		for ( i = 0; i < NumberOfSections; i++ )
+		{
+			IMAGE_SECTION_HEADER	sectionHeader;
+
+			fread(&sectionHeader, sizeof(sectionHeader), 1, hFile);
+			if ( strncmp((const char*)sectionHeader.Name, ".rdata", IMAGE_SIZEOF_SHORT_NAME) == 0 )
+			{
+				RVAOffset = sectionHeader.VirtualAddress - sectionHeader.PointerToRawData;	// We'll need this data later on
+				break;
+			}
+		}
+
+		// Skip to the first IMAGE_IMPORT_DESCRIPTOR
+		fseek(hFile, IATOffset - RVAOffset, SEEK_SET);
+		i = 0;
+
+		// Read those until we find shell32 or kernel32
+		while ( dwKernelOffset == 0 || dwShellOffset == 0 )
+		{
+			IMAGE_IMPORT_DESCRIPTOR descriptor;
+			long dwCurOffset;
+
+			fread(&descriptor, sizeof(descriptor), 1, hFile);
+			if ( descriptor.Characteristics == 0 )
+				break;	// No more imports, exit
+
+			// Seek to the name
+			dwCurOffset = descriptor.Name - RVAOffset;
+			fseek(hFile, dwCurOffset, SEEK_SET);
+			fread(cDLLNameBuf, 1, sizeof(cDLLNameBuf), hFile);
+			if ( strncmp(cDLLNameBuf, "KERNEL32.dll", 16) == 0 )
+				dwKernelOffset = dwCurOffset;
+			else if ( strncmp(cDLLNameBuf, "SHELL32.dll", 16) == 0 )
+				dwShellOffset = dwCurOffset;
+
+			// fseek back
+			fseek(hFile, IATOffset - RVAOffset + (++i * sizeof(IMAGE_IMPORT_DESCRIPTOR)), SEEK_SET);
+		}
+
+		if ( dwKernelOffset != 0 && dwShellOffset != 0 )
+		{
+			// Ready to rewind and write new imports names
+			static const char		cNewImportName[] = "hm2_xp.dll";
+
+			fseek(hFile, dwKernelOffset, SEEK_SET);
+			fwrite(cNewImportName, 1, sizeof(cNewImportName), hFile);
+
+			fseek(hFile, dwShellOffset, SEEK_SET);
+			fwrite(cNewImportName, 1, sizeof(cNewImportName), hFile);
+		}
+
+		fclose(hFile);
+	}
 }
