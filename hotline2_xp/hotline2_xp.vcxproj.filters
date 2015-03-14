@@ -18,16 +18,5 @@
     <ClCompile Include="hm2_xp.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="stubs_kernel32.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="stubs_shell32.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="hm2_xp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

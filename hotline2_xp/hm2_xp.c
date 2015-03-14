@@ -1,49 +1,16 @@
-#include "hm2_xp.h"
+#pragma warning(disable:4273)	// inconsistent dll linkage
+
+#define _CRT_SECURE_NO_WARNINGS
+#define WIN32_LEAN_AND_MEAN
+
+#define WINVER 0x0500
+#define _WIN32_WINNT 0x0500
+
+#include <Windows.h>
+
 #include <stdio.h>
 #include <Shlobj.h>
 #include <locale.h>
-
-HMODULE		hKernelLibrary, hShellLibrary;
-
-// GetProcAddress with validator
-FARPROC WINAPI GetProcAddress_Validate(HMODULE hModule, LPCSTR lpProcName)
-{
-	FARPROC		tempFarproc = GetProcAddress(hModule, lpProcName);
-	if ( tempFarproc == NULL )
-	{
-		char		cTemp[MAX_PATH];
-		sprintf(cTemp, "Failed to locate %s", lpProcName);
-		MessageBoxA(NULL, cTemp, "HM2 XP Patch", MB_OK);
-	}
-	return tempFarproc;
-}
-
-BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID lpReserved)
-{
-	//UNREFERENCED_PARAMETER(hModule);
-	UNREFERENCED_PARAMETER(lpReserved);
-
-	switch ( reason )
-	{
-	case DLL_PROCESS_ATTACH:
-		hKernelLibrary = LoadLibrary(L"kernel32");
-		hShellLibrary = LoadLibrary(L"shell32");
-#ifdef _DEBUG
-		ResolveKernelDepends((unsigned int)hKernelLibrary, (void*(__stdcall*)(unsigned int,const char*))GetProcAddress_Validate);
-		ResolveShellDepends((unsigned int)hShellLibrary, (void*(__stdcall*)(unsigned int,const char*))GetProcAddress_Validate);
-#else
-		ResolveKernelDepends((unsigned int)hKernelLibrary, (void*(__stdcall*)(unsigned int,const char*))GetProcAddress);
-		ResolveShellDepends((unsigned int)hShellLibrary, (void*(__stdcall*)(unsigned int,const char*))GetProcAddress);
-#endif
-		break;
-	case DLL_PROCESS_DETACH:
-		FreeLibrary(hKernelLibrary);
-		FreeLibrary(hShellLibrary);
-		break;
-	}
-	return TRUE;
-}
-
 
 // kernel32 emulation functions
 VOID WINAPI InitializeConditionVariable(PCONDITION_VARIABLE ConditionVariable) 

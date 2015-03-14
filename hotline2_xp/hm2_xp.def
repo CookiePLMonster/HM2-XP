@@ -1,8 +1,65 @@
 LIBRARY		hm2_xp.dll
 EXPORTS
-	InitializeConditionVariable=_InitializeConditionVariable@4
-	SleepConditionVariableCS=_SleepConditionVariableCS@12
-	WakeAllConditionVariable=_WakeAllConditionVariable@4
-	SHGetKnownFolderPath=_SHGetKnownFolderPath@16
-	GetUserDefaultLocaleName=_GetUserDefaultLocaleName@8
-	GetVersion=GetVersion
+; kernel32 stock exports
+	CloseHandle
+	CreateDirectoryExA
+	CreateSemaphoreA
+	DecodePointer
+	DeleteCriticalSection
+	EncodePointer
+	EnterCriticalSection
+	FindClose
+	FindFirstFileA
+	FindNextFileA
+	FreeLibrary
+	GetCurrentProcess
+	GetCurrentProcessId
+	GetCurrentThreadId
+	GetFileAttributesA
+	GetModuleHandleW
+	GetProcAddress
+	GetShortPathNameW
+	GetStartupInfoW
+	GetSystemTimeAsFileTime
+	GetTickCount
+	HeapSetInformation
+	InitializeCriticalSection
+	InterlockedCompareExchange
+	InterlockedExchange
+	IsDebuggerPresent
+	IsProcessorFeaturePresent
+	LeaveCriticalSection
+	LoadLibraryW
+	MultiByteToWideChar
+	QueryPerformanceCounter
+	QueryPerformanceFrequency
+	ReleaseSemaphore
+	RemoveDirectoryA
+	SetCurrentDirectoryW
+	SetThreadPriority
+	SetUnhandledExceptionFilter
+	Sleep
+	TerminateProcess
+	TlsAlloc
+	TlsFree
+	TlsGetValue
+	TlsSetValue
+	UnhandledExceptionFilter
+	WaitForSingleObject
+	WaitForSingleObjectEx
+	WideCharToMultiByte
+; kernel32 hooked exports
+	InitializeConditionVariable
+	SleepConditionVariableCS
+	WakeAllConditionVariable
+	GetUserDefaultLocaleName
+	GetVersion
+
+; shell32 stock exports
+	DragAcceptFiles
+	DragFinish
+	DragQueryFileW
+	DragQueryPoint
+	SHCreateDirectoryExA
+; shell32 hooked exports
+	SHGetKnownFolderPath
