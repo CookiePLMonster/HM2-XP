@@ -60,7 +60,7 @@ HRESULT WINAPI SHGetKnownFolderPath(REFKNOWNFOLDERID rfid, DWORD dwFlags, HANDLE
 	hResult = SHGetFolderPathW(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, wcTempString);
 	if ( hResult == S_OK )
 	{
-		nLen = wcslen(wcTempString) + 1;
+		nLen = wcslen(wcTempString);
 
 		pAlloc = CoTaskMemAlloc((nLen+1)*sizeof(wchar_t));
 		wcscpy((wchar_t*)pAlloc, wcTempString);
