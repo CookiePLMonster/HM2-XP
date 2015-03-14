@@ -103,24 +103,9 @@ void __declspec(dllexport,naked) GetTickCount() {
 	_asm jmp varGetTickCount
 }
 
-static void* varGetUserDefaultLocaleName;
-void __declspec(dllexport,naked) GetUserDefaultLocaleName() {
-	_asm jmp varGetUserDefaultLocaleName
-}
-
-static void* varGetVersion;
-void __declspec(dllexport,naked) GetVersion() {
-	_asm jmp varGetVersion
-}
-
 static void* varHeapSetInformation;
 void __declspec(dllexport,naked) HeapSetInformation() {
 	_asm jmp varHeapSetInformation
-}
-
-static void* varInitializeConditionVariable;
-void __declspec(dllexport,naked) InitializeConditionVariable() {
-	_asm jmp varInitializeConditionVariable
 }
 
 static void* varInitializeCriticalSection;
@@ -203,11 +188,6 @@ void __declspec(dllexport,naked) Sleep() {
 	_asm jmp varSleep
 }
 
-static void* varSleepConditionVariableCS;
-void __declspec(dllexport,naked) SleepConditionVariableCS() {
-	_asm jmp varSleepConditionVariableCS
-}
-
 static void* varTerminateProcess;
 void __declspec(dllexport,naked) TerminateProcess() {
 	_asm jmp varTerminateProcess
@@ -248,12 +228,58 @@ void __declspec(dllexport,naked) WaitForSingleObjectEx() {
 	_asm jmp varWaitForSingleObjectEx
 }
 
-static void* varWakeAllConditionVariable;
-void __declspec(dllexport,naked) WakeAllConditionVariable() {
-	_asm jmp varWakeAllConditionVariable
-}
-
 static void* varWideCharToMultiByte;
 void __declspec(dllexport,naked) WideCharToMultiByte() {
 	_asm jmp varWideCharToMultiByte
+}
+
+void ResolveKernelDepends(unsigned int hModule, void* (__stdcall* pGetProcAddressFunc)(unsigned int,const char*))
+{
+	varCloseHandle = pGetProcAddressFunc(hModule, "CloseHandle");
+	varCreateDirectoryExA = pGetProcAddressFunc(hModule, "CreateDirectoryExA");
+	varCreateSemaphoreA = pGetProcAddressFunc(hModule, "CreateSemaphoreA");
+	varDecodePointer = pGetProcAddressFunc(hModule, "DecodePointer");
+	varDeleteCriticalSection = pGetProcAddressFunc(hModule, "DeleteCriticalSection");
+	varEncodePointer = pGetProcAddressFunc(hModule, "EncodePointer");
+	varEnterCriticalSection = pGetProcAddressFunc(hModule, "EnterCriticalSection");
+	varFindClose = pGetProcAddressFunc(hModule, "FindClose");
+	varFindFirstFileA = pGetProcAddressFunc(hModule, "FindFirstFileA");
+	varFindNextFileA = pGetProcAddressFunc(hModule, "FindNextFileA");
+	varFreeLibrary = pGetProcAddressFunc(hModule, "FreeLibrary");
+	varGetCurrentProcess = pGetProcAddressFunc(hModule, "GetCurrentProcess");
+	varGetCurrentProcessId = pGetProcAddressFunc(hModule, "GetCurrentProcessId");
+	varGetCurrentThreadId = pGetProcAddressFunc(hModule, "GetCurrentThreadId");
+	varGetFileAttributesA = pGetProcAddressFunc(hModule, "GetFileAttributesA");
+	varGetModuleHandleW = pGetProcAddressFunc(hModule, "GetModuleHandleW");
+	varGetProcAddress = pGetProcAddressFunc(hModule, "GetProcAddress");
+	varGetShortPathNameW = pGetProcAddressFunc(hModule, "GetShortPathNameW");
+	varGetStartupInfoW = pGetProcAddressFunc(hModule, "GetStartupInfoW");
+	varGetSystemTimeAsFileTime = pGetProcAddressFunc(hModule, "GetSystemTimeAsFileTime");
+	varGetTickCount = pGetProcAddressFunc(hModule, "GetTickCount");
+	varHeapSetInformation = pGetProcAddressFunc(hModule, "HeapSetInformation");
+	varInitializeCriticalSection = pGetProcAddressFunc(hModule, "InitializeCriticalSection");
+	varInterlockedCompareExchange = pGetProcAddressFunc(hModule, "InterlockedCompareExchange");
+	varInterlockedExchange = pGetProcAddressFunc(hModule, "InterlockedExchange");
+	varIsDebuggerPresent = pGetProcAddressFunc(hModule, "IsDebuggerPresent");
+	varIsProcessorFeaturePresent = pGetProcAddressFunc(hModule, "IsProcessorFeaturePresent");
+	varLeaveCriticalSection = pGetProcAddressFunc(hModule, "LeaveCriticalSection");
+	varLoadLibraryW = pGetProcAddressFunc(hModule, "LoadLibraryW");
+	varMultiByteToWideChar = pGetProcAddressFunc(hModule, "MultiByteToWideChar");
+	varQueryPerformanceCounter = pGetProcAddressFunc(hModule, "QueryPerformanceCounter");
+	varQueryPerformanceFrequency = pGetProcAddressFunc(hModule, "QueryPerformanceFrequency");
+	varReleaseSemaphore = pGetProcAddressFunc(hModule, "ReleaseSemaphore");
+	varRemoveDirectoryA = pGetProcAddressFunc(hModule, "RemoveDirectoryA");
+	varSetCurrentDirectoryW = pGetProcAddressFunc(hModule, "SetCurrentDirectoryW");
+	varSetThreadPriority = pGetProcAddressFunc(hModule, "SetThreadPriority");
+	varSetUnhandledExceptionFilter = pGetProcAddressFunc(hModule, "SetUnhandledExceptionFilter");
+	varSleep = pGetProcAddressFunc(hModule, "Sleep");
+	varTerminateProcess = pGetProcAddressFunc(hModule, "TerminateProcess");
+	varTlsAlloc = pGetProcAddressFunc(hModule, "TlsAlloc");
+	varTlsFree = pGetProcAddressFunc(hModule, "TlsFree");
+	varTlsGetValue = pGetProcAddressFunc(hModule, "TlsGetValue");
+	varTlsSetValue = pGetProcAddressFunc(hModule, "TlsSetValue");
+	varUnhandledExceptionFilter = pGetProcAddressFunc(hModule, "UnhandledExceptionFilter");
+	varWaitForSingleObject = pGetProcAddressFunc(hModule, "WaitForSingleObject");
+	varWaitForSingleObjectEx = pGetProcAddressFunc(hModule, "WaitForSingleObjectEx");
+	varWideCharToMultiByte = pGetProcAddressFunc(hModule, "WideCharToMultiByte");
 }

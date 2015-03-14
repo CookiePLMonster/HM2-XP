@@ -1,4 +1,8 @@
 LIBRARY		hm2_xp.dll
 EXPORTS
-	CloseHandle
-	_FreeLibrary
+	InitializeConditionVariable=_InitializeConditionVariable@4
+	SleepConditionVariableCS=_SleepConditionVariableCS@12
+	WakeAllConditionVariable=_WakeAllConditionVariable@4
+	SHGetKnownFolderPath=_SHGetKnownFolderPath@16
+	GetUserDefaultLocaleName=_GetUserDefaultLocaleName@8
+	GetVersion=GetVersion

@@ -151,7 +151,7 @@ HMODULE			hD3DLib;
 CHM2Direct3D9Ex::CHM2Direct3D9Ex(UINT SDKVersion)
 {
 	nRefcount = 1;
-	pWrappedInterface = pDirect3DCreate9(SDKVersion);
+	pWrappedInterface = pDirect3DCreate9(D3D_SDK_VERSION);
 }
 
 CHM2Direct3D9Ex::~CHM2Direct3D9Ex()

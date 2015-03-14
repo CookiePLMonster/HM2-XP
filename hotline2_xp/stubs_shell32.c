@@ -23,7 +23,11 @@ void __declspec(dllexport,naked) SHCreateDirectoryExA() {
 	_asm jmp varSHCreateDirectoryExA
 }
 
-static void* varSHGetKnownFolderPath;
-void __declspec(dllexport,naked) SHGetKnownFolderPath() {
-	_asm jmp varSHGetKnownFolderPath
+void ResolveShellDepends(unsigned int hModule, void* (__stdcall* pGetProcAddressFunc)(unsigned int,const char*))
+{
+	varDragAcceptFiles = pGetProcAddressFunc(hModule, "DragAcceptFiles");
+	varDragFinish = pGetProcAddressFunc(hModule, "DragFinish");
+	varDragQueryFileW = pGetProcAddressFunc(hModule, "DragQueryFileW");
+	varDragQueryPoint = pGetProcAddressFunc(hModule, "DragQueryPoint");
+	varSHCreateDirectoryExA = pGetProcAddressFunc(hModule, "SHCreateDirectoryExA");
 }

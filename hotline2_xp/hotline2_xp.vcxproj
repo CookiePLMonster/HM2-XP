@@ -58,8 +58,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <MinimumRequiredVersion>5.0</MinimumRequiredVersion>
-      <ModuleDefinitionFile>
-      </ModuleDefinitionFile>
+      <ModuleDefinitionFile>hm2_xp.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
       <Command>copy /y "$(TargetPath)" "D:\gry\Steam\steamapps\common\Hotline Miami 2\hm2_xp.dll"</Command>
@@ -79,8 +78,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Windows</SubSystem>
       <MinimumRequiredVersion>5.0</MinimumRequiredVersion>
-      <ModuleDefinitionFile>
-      </ModuleDefinitionFile>
+      <ModuleDefinitionFile>hm2_xp.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
       <Command>copy /y "$(TargetPath)" "D:\gry\Steam\steamapps\common\Hotline Miami 2\hm2_xp.dll"</Command>
@@ -90,6 +88,9 @@
     <ClCompile Include="hm2_xp.c" />
     <ClCompile Include="stubs_kernel32.c" />
     <ClCompile Include="stubs_shell32.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="hm2_xp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
