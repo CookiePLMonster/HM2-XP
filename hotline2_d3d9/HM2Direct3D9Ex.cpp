@@ -1,4 +1,4 @@
-#include "hm2_d3d9.h"
+#include "HM2Direct3D9Ex.h"
 #include <Shlwapi.h>
 
 HRESULT CHM2Direct3D9Ex::QueryInterface(REFIID iid, void** ppvObject)

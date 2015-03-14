@@ -89,10 +89,12 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="hm2_d3d9.cpp" />
+    <ClCompile Include="HM2Direct3D9Ex.cpp" />
+    <ClCompile Include="HM2Direct3DDevice9Ex.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="hm2_d3d9.h" />
+    <ClInclude Include="HM2Direct3D9Ex.h" />
+    <ClInclude Include="HM2Direct3DDevice9Ex.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
