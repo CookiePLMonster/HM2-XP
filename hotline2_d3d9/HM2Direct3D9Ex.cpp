@@ -137,8 +137,8 @@ HRESULT CHM2Direct3D9Ex::GetAdapterDisplayModeEx(UINT Adapter, D3DDISPLAYMODEEX*
 
 HRESULT CHM2Direct3D9Ex::CreateDeviceEx(UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS* pPresentationParameters,  D3DDISPLAYMODEEX* pFullscreenDisplayMode, IDirect3DDevice9Ex** ppReturnedDeviceInterface)
 {
-	// TODO: Do it PROPERLY
-	//return pWrappedInterface->CreateDevice(Adapter, DeviceType, hFocusWindow, BehaviorFlags, pPresentationParameters, reinterpret_cast<IDirect3DDevice9**>(ppReturnedDeviceInterface));
+	// Force windowed mode
+	pPresentationParameters->Windowed = TRUE;
 	*ppReturnedDeviceInterface = new CHM2Direct3DDevice9Ex(this, Adapter, DeviceType, hFocusWindow, BehaviorFlags, pPresentationParameters);
 	return S_OK;
 }
@@ -152,8 +152,19 @@ HRESULT CHM2Direct3D9Ex::GetAdapterLUID(UINT Adapter, LUID* pLUID)
 IDirect3D9*		(WINAPI *pDirect3DCreate9)(UINT SDKVersion);
 HMODULE			hD3DLib;
 
-CHM2Direct3D9Ex::CHM2Direct3D9Ex(UINT SDKVersion)
+CHM2Direct3D9Ex::CHM2Direct3D9Ex()
 {
+	if ( pDirect3DCreate9 == nullptr )
+	{
+		// Initialize the Direct3DCreate9 pointer (safer to do here than in DllMain)
+		wchar_t		wcSystemPath[MAX_PATH];
+		GetSystemDirectoryW(wcSystemPath, MAX_PATH);
+		PathAppendW(wcSystemPath, L"d3d9.dll");
+
+		hD3DLib = LoadLibraryW(wcSystemPath);
+		pDirect3DCreate9 = (IDirect3D9*(WINAPI*)(UINT))GetProcAddress(hD3DLib, "Direct3DCreate9");
+	}
+
 	nRefcount = 1;
 	pWrappedInterface = pDirect3DCreate9(D3D_SDK_VERSION);
 }
@@ -167,29 +178,6 @@ CHM2Direct3D9Ex::~CHM2Direct3D9Ex()
 
 HRESULT WINAPI Direct3DCreate9Ex(UINT SDKVersion, IDirect3D9Ex **ppD3D)
 {
-	*ppD3D = new CHM2Direct3D9Ex(SDKVersion);
+	*ppD3D = new CHM2Direct3D9Ex();
 	return S_OK;	// Might not be enough, but Hotline never checks for this
-}
-
-BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
-{
-	switch ( fdwReason )
-	{
-	case DLL_PROCESS_ATTACH:
-		{
-			wchar_t		wcSystemPath[MAX_PATH];
-			GetSystemDirectoryW(wcSystemPath, MAX_PATH);
-			PathAppendW(wcSystemPath, L"d3d9.dll");
-
-			hD3DLib = LoadLibraryW(wcSystemPath);
-			pDirect3DCreate9 = (IDirect3D9*(WINAPI*)(UINT))GetProcAddress(hD3DLib, "Direct3DCreate9");
-			break;
-		}
-	case DLL_PROCESS_DETACH:
-		{
-			FreeLibrary(hD3DLib);
-			break;
-		}
-	}
-	return TRUE;
 }

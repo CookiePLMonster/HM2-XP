@@ -31,7 +31,7 @@ public:
 	virtual HRESULT STDMETHODCALLTYPE		GetAdapterLUID(UINT Adapter, LUID* pLUID);
 
 public:
-	CHM2Direct3D9Ex(UINT SDKVersion);
+	CHM2Direct3D9Ex();
 	virtual ~CHM2Direct3D9Ex();
 
 private:
