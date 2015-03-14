@@ -1,32 +1,6 @@
 #include "HM2Direct3D9Ex.h"
+#include "HM2Direct3DDevice9Ex.h"
 #include <Shlwapi.h>
-
-HRESULT CHM2Direct3D9Ex::QueryInterface(REFIID iid, void** ppvObject)
-{
-	if ( ppvObject == nullptr )
-		return E_POINTER;
-
-	if ( iid == __uuidof(IUnknown) || iid == __uuidof(IDirect3D9) || iid == __uuidof(IDirect3D9Ex) )
-	{
-		*ppvObject = static_cast<IUnknown*>(this);
-		AddRef();
-		return S_OK;
-	}
-	return E_NOINTERFACE;
-}
-
-ULONG CHM2Direct3D9Ex::AddRef()
-{
-	return InterlockedIncrement(&nRefcount);
-}
-
-ULONG CHM2Direct3D9Ex::Release()
-{
-	 ULONG ref = InterlockedDecrement(&nRefcount);
-	 if ( ref == 0 )
-		 delete this;
-	 return ref;
-}
 
 HRESULT CHM2Direct3D9Ex::RegisterSoftwareDevice(void *pInitializeFunction)
 {
@@ -103,6 +77,34 @@ UINT CHM2Direct3D9Ex::GetAdapterModeCountEx(UINT Adapter, const D3DDISPLAYMODEFI
 	return pWrappedInterface->GetAdapterModeCount(Adapter, pFilter->Format);
 }
 
+
+HRESULT CHM2Direct3D9Ex::QueryInterface(REFIID iid, void** ppvObject)
+{
+	if ( ppvObject == nullptr )
+		return E_POINTER;
+
+	if ( iid == __uuidof(IUnknown) || iid == __uuidof(IDirect3D9) || iid == __uuidof(IDirect3D9Ex) )
+	{
+		*ppvObject = static_cast<IUnknown*>(this);
+		AddRef();
+		return S_OK;
+	}
+	return E_NOINTERFACE;
+}
+
+ULONG CHM2Direct3D9Ex::AddRef()
+{
+	return InterlockedIncrement(&nRefcount);
+}
+
+ULONG CHM2Direct3D9Ex::Release()
+{
+	 ULONG ref = InterlockedDecrement(&nRefcount);
+	 if ( ref == 0 )
+		 delete this;
+	 return ref;
+}
+
 HRESULT CHM2Direct3D9Ex::EnumAdapterModesEx(UINT Adapter, const D3DDISPLAYMODEFILTER *pFilter, UINT Mode, D3DDISPLAYMODEEX *pMode)
 {
 	D3DDISPLAYMODE dummyRetMode;
@@ -136,7 +138,9 @@ HRESULT CHM2Direct3D9Ex::GetAdapterDisplayModeEx(UINT Adapter, D3DDISPLAYMODEEX*
 HRESULT CHM2Direct3D9Ex::CreateDeviceEx(UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS* pPresentationParameters,  D3DDISPLAYMODEEX* pFullscreenDisplayMode, IDirect3DDevice9Ex** ppReturnedDeviceInterface)
 {
 	// TODO: Do it PROPERLY
-	return pWrappedInterface->CreateDevice(Adapter, DeviceType, hFocusWindow, BehaviorFlags, pPresentationParameters, reinterpret_cast<IDirect3DDevice9**>(ppReturnedDeviceInterface));
+	//return pWrappedInterface->CreateDevice(Adapter, DeviceType, hFocusWindow, BehaviorFlags, pPresentationParameters, reinterpret_cast<IDirect3DDevice9**>(ppReturnedDeviceInterface));
+	*ppReturnedDeviceInterface = new CHM2Direct3DDevice9Ex(this, Adapter, DeviceType, hFocusWindow, BehaviorFlags, pPresentationParameters);
+	return S_OK;
 }
 
 HRESULT CHM2Direct3D9Ex::GetAdapterLUID(UINT Adapter, LUID* pLUID)
