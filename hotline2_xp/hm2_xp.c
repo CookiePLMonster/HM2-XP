@@ -38,12 +38,14 @@ VOID WINAPI WakeAllConditionVariable(PCONDITION_VARIABLE ConditionVariable)
 
 int WINAPI GetUserDefaultLocaleName(LPWSTR lpLocaleName, int cchLocaleName)
 {
+	// TODO: Make it return correct values basing on the list of locales Hotline recognizes
 	lpLocaleName = _wsetlocale(LC_ALL, NULL);
 	return wcslen(lpLocaleName);
 }
 
 DWORD WINAPI GetVersion()
 {
+	// TODO: Might not be needed after future official patches
 	return 0;
 }
 
@@ -73,6 +75,10 @@ HRESULT WINAPI SHGetKnownFolderPath(REFKNOWNFOLDERID rfid, DWORD dwFlags, HANDLE
 // EXE patcher
 void CALLBACK _patchexeW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, int nCmdShow)
 {
+	// TODO: MAKE THIS READ AN ENTIRE EXE AT ONCE AND PATCH THOSE STRINGS WITHIN A BUFFER
+	// INSTEAD OF THIS ODDLY LOOKING MESS
+
+
 	// This opens a HM2 EXE and patches kernel32.dll and shell32.dll imports to use hm2_xp.dll instead
 	FILE* hFile;
 
