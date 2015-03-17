@@ -1,3 +1,10 @@
+/*
+ *  Hotline Miami 2: Wrong Number XP Support Patch
+ *	kernel32/shell wrapper
+ *      Created by Silent <zdanio95@gmail.com>
+ */
+
+
 #pragma warning(disable:4273)	// inconsistent dll linkage
 
 #define _CRT_SECURE_NO_WARNINGS

@@ -1,3 +1,10 @@
+/*
+ *  Hotline Miami 2: Wrong Number XP Support Patch
+ *	IDirect3DDevice9Ex -> IDirect3DDevice9 wrapper
+ *      Created by Silent <zdanio95@gmail.com>
+ */
+
+
 #include "HM2Direct3DDevice9Ex.h"
 
 
