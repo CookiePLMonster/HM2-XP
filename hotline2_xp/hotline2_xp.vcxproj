@@ -61,9 +61,7 @@
       <MinimumRequiredVersion>5.0</MinimumRequiredVersion>
       <ModuleDefinitionFile>hm2_xp.def</ModuleDefinitionFile>
     </Link>
-    <PostBuildEvent>
-      <Command>copy /y "$(TargetPath)" "D:\gry\Steam\steamapps\common\Hotline Miami 2\hm2_xp.dll"</Command>
-    </PostBuildEvent>
+    <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -82,9 +80,7 @@
       <MinimumRequiredVersion>5.0</MinimumRequiredVersion>
       <ModuleDefinitionFile>hm2_xp.def</ModuleDefinitionFile>
     </Link>
-    <PostBuildEvent>
-      <Command>copy /y "$(TargetPath)" "D:\gry\Steam\steamapps\common\Hotline Miami 2\hm2_xp.dll"</Command>
-    </PostBuildEvent>
+    <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="hm2_xp.c" />

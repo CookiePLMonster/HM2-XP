@@ -62,9 +62,7 @@
       <ModuleDefinitionFile>hm2_d3d9.def</ModuleDefinitionFile>
       <AdditionalDependencies>shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
-      <Command>copy /y "$(TargetPath)" "D:\gry\Steam\steamapps\common\Hotline Miami 2\d3d9.dll"</Command>
-    </PostBuildEvent>
+    <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -84,9 +82,7 @@
       <ModuleDefinitionFile>hm2_d3d9.def</ModuleDefinitionFile>
       <AdditionalDependencies>shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
-      <Command>copy /y "$(TargetPath)" "D:\gry\Steam\steamapps\common\Hotline Miami 2\d3d9.dll"</Command>
-    </PostBuildEvent>
+    <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="HM2Direct3D9Ex.cpp" />
