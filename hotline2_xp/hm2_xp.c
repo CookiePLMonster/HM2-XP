@@ -19,6 +19,11 @@
 #include <Shlobj.h>
 #include <locale.h>
 #include <stddef.h>
+#include <assert.h>
+
+// LCID helpers
+#define LCID_PRIMARY_LANG(a)	((a) & 0x3FF)
+#define LCID_SUBLANG(a)			(((a) >> 10) & 0x3F)
 
 // kernel32 emulation functions
 VOID WINAPI InitializeConditionVariable(PCONDITION_VARIABLE ConditionVariable)
@@ -29,6 +34,7 @@ VOID WINAPI InitializeConditionVariable(PCONDITION_VARIABLE ConditionVariable)
 BOOL WINAPI SleepConditionVariableCS( PCONDITION_VARIABLE ConditionVariable, PCRITICAL_SECTION CriticalSection, DWORD dwMilliseconds)
 {
 	DWORD dwResult;
+	assert(CriticalSection->RecursionCount == 1);	// Validating AG's code ;)
 	LeaveCriticalSection(CriticalSection);
 	dwResult = WaitForSingleObject(*(PHANDLE)ConditionVariable, dwMilliseconds);
 	EnterCriticalSection(CriticalSection);
@@ -45,9 +51,43 @@ VOID WINAPI WakeAllConditionVariable(PCONDITION_VARIABLE ConditionVariable)
 
 int WINAPI GetUserDefaultLocaleName(LPWSTR lpLocaleName, int cchLocaleName)
 {
-	// TODO: Make it return correct values basing on the list of locales Hotline recognizes
-	lpLocaleName = _wsetlocale(LC_ALL, NULL);
-	return wcslen(lpLocaleName);
+	// Those are all locales AG uses
+	LCID	LanguageCode = GetUserDefaultLCID();
+	switch ( LCID_PRIMARY_LANG(LanguageCode) )
+	{
+	case LANG_FRENCH:
+		wcscpy(lpLocaleName, L"fr");
+		return sizeof("fr");	// It's a nice trick, returns the length of the string
+								// together with a null terminator, which we need to
+								// include in function's return value
+	case LANG_ITALIAN:
+		wcscpy(lpLocaleName, L"it");
+		return sizeof("it");
+	case LANG_GERMAN:
+		wcscpy(lpLocaleName, L"de");
+		return sizeof("de");
+	case LANG_SPANISH:
+		wcscpy(lpLocaleName, L"es");
+		return sizeof("es");
+	case LANG_PORTUGUESE:
+		if ( LCID_SUBLANG(LanguageCode) == SUBLANG_PORTUGUESE_BRAZILIAN )
+		{
+			wcscpy(lpLocaleName, L"pt-BR");
+			return sizeof("pt-BR");
+		}
+		wcscpy(lpLocaleName, L"pt");
+		return sizeof("pt");
+	case LANG_POLISH:
+		wcscpy(lpLocaleName, L"pl");
+		return sizeof("pl");
+	case LANG_RUSSIAN:
+		wcscpy(lpLocaleName, L"ru");
+		return sizeof("ru");
+	}
+
+	// We'll default to en
+	wcscpy(lpLocaleName, L"en");
+	return sizeof("en");
 }
 
 DWORD WINAPI GetVersion()
@@ -60,6 +100,8 @@ DWORD WINAPI GetVersion()
 // shell32 emulation functions
 HRESULT WINAPI SHGetKnownFolderPath(REFKNOWNFOLDERID rfid, DWORD dwFlags, HANDLE hToken, PWSTR *ppszPath)
 {
+	// NOTE: Not needed as of 1.03, keeping it there for backwarda compatibility purposes
+
 	// Always operates on FOLDERID_Documents here
 	HRESULT hResult;
 	wchar_t	wcTempString[MAX_PATH];
