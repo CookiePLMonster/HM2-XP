@@ -21,3 +21,9 @@ the game is now forced to run in borderless windowed mode, so it still appears t
 be minimized like regular fullscreen applications.
 The game will STILL crash when applying changes to any Graphics settings. Don't worry, despite the crash, all the
 changes got applied! When you launch the game again, the settings will be changed.
+
+### License
+
+As the following patch is open source, it's under the **Silent's License**.
+It means that the source code is for learning purposes. You may only use it for your own projects
+but NOT to recreate or build on the original work.
